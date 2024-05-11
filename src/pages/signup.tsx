@@ -14,21 +14,9 @@ import {
 } from "@/components/ui/form";
 
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { useState } from "react";
 import { useAuth } from "@/auth/auth-provider";
-import { Navigate } from "react-router-dom";
-
-// import {
-//   Dialog,
-//   DialogContent,
-//   DialogDescription,
-//   DialogFooter,
-//   DialogHeader,
-//   DialogTitle,
-//   DialogTrigger,
-// } from "@/components/ui/dialog";
-
-// import { Label } from "@/components/ui/label";
+import { Navigate, useNavigate } from "react-router-dom";
+import { API_URL } from "@/auth/url";
 
 const formSchema = z.object({
   username: z
@@ -39,22 +27,17 @@ const formSchema = z.object({
     .string()
     .min(5, { message: "Password is too short" })
     .max(20, { message: "Password is too short" }),
-  email: z.string(),
+  email: z.string().email({ message: "Invalid email address" }),
 });
 
 export function SignUp() {
-  const [username, setUsername] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-
-  //   1. Define your form.
+  const goTo = useNavigate();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-
     defaultValues: {
-      username: "",
-      password: "",
       email: "",
+      password: "",
+      username: "",
     },
   });
 
@@ -63,15 +46,28 @@ export function SignUp() {
     return <Navigate to={"/to-do"} />;
   }
 
-  // 2. Define a submit handler.
   function onSubmit(values: z.infer<typeof formSchema>) {
-    // Do something with the form values.
-    // ✅ This will be type-safe and validated.x
-
-    setEmail(values.email);
-    setPassword(values.password);
-    setUsername(values.username);
-    console.log(values);
+    console.log({
+      emai: values.email,
+      password: values.password,
+      username: values.username,
+    });
+    fetch(`${API_URL}/user/post`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        email: values.email,
+        password: values.password,
+        username: values.username,
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        console.log(data);
+      })
+      .catch((error) => console.log(error));
   }
 
   return (
@@ -101,7 +97,6 @@ export function SignUp() {
                             className="border-primary/20 dark:border-primary/10"
                             placeholder="Email"
                             {...field}
-                            // onChange={(e) => setEmail(e.target.value)}
                           />
                         </FormControl>
                         <FormMessage />
@@ -119,7 +114,6 @@ export function SignUp() {
                           <Input
                             className="border-primary/20  dark:border-primary/10"
                             placeholder="Username"
-                            // onChange={(e) => setUsername(e.target.value)}
                             {...field}
                           />
                         </FormControl>
@@ -138,8 +132,8 @@ export function SignUp() {
                           <Input
                             className="border-primary/20 dark:border-primary/10"
                             placeholder="Password"
+                            type="password"
                             {...field}
-                            // onChange={(e) => setPassword(e.target.value)}
                           />
                         </FormControl>
                         <FormMessage />
@@ -154,7 +148,7 @@ export function SignUp() {
                       value="Submit"
                       className="w-full dark:border-primary/20 border-primary"
                     >
-                      <a href="#">Submit</a>
+                      Submit
                     </Button>
                   </div>
                 </form>
@@ -163,10 +157,7 @@ export function SignUp() {
               <div className="border-t font-light mt-5 pt-4 dark:border-primary/20 border-primary/40">
                 <div className="flex">
                   <p className="font-semibold">Alredy have an acount? </p>
-                  <a
-                    href="/"
-                    className="ps-[0.4em] underline text-primary"
-                  >
+                  <a href="/" className="ps-[0.4em] underline text-primary">
                     Log in here
                   </a>
                 </div>

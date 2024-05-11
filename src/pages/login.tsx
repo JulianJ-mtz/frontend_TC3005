@@ -17,6 +17,7 @@ import {
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { useAuth } from "@/auth/auth-provider";
 import { Navigate } from "react-router-dom";
+import { API_URL } from "@/auth/url";
 
 const formSchema = z.object({
   username: z.string().min(2).max(50),
@@ -47,12 +48,9 @@ export function Login() {
     // Do something with the form values.
     // ✅ This will be type-safe and validated.x
 
-    setPassword(values.password);
-    setUsername(values.username);
     console.log(values);
   }
 
- 
   return (
     <>
       <div className="bg-gradient-to-b from-background from-15% to-primary/20">
