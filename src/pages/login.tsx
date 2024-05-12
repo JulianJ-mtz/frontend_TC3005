@@ -16,39 +16,64 @@ import {
 
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { useAuth } from "@/auth/auth-provider";
-import { Navigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 import { API_URL } from "@/auth/url";
+import { AuthResponseError } from "@/types/types";
 
 const formSchema = z.object({
-  username: z.string().min(2).max(50),
-  password: z.string().min(5).max(20),
-  email: z.string(),
+  username: z
+    .string()
+    .min(2, { message: "Username is too short" })
+    .max(50, { message: "Username in too long" }),
+  password: z
+    .string()
+    .min(5, { message: "Password is too short" })
+    .max(20, { message: "Password is too short" }),
 });
 
 export function Login() {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
+  const goTo = useNavigate();
+  const [errorResponse, setErrorResponse] = useState("");
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       username: "",
       password: "",
-      email: "",
     },
   });
+
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    try {
+      const response = await fetch(`${API_URL}/user/auth`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          password: values.password,
+          username: values.username,
+        }),
+      });
+
+      if (response.ok) {
+        console.log("Login successful");
+        setErrorResponse("");
+        // goTo("/");
+      } else {
+        console.log("Something went wrong");
+        const json = (await response.json()) as AuthResponseError;
+        setErrorResponse(json.body.error);
+        throw new Error(`Error submitting form: ${response.statusText}`);
+      }
+    } catch (error) {
+      console.error("Error submitting form:", error);
+    }
+  }
 
   const auth = useAuth();
   if (auth.isAuthenticated) {
     return <Navigate to={"/to-do"} />;
-  }
-
-  // 2. Define a submit handler.
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    // Do something with the form values.
-    // ✅ This will be type-safe and validated.x
-
-    console.log(values);
   }
 
   return (
@@ -62,6 +87,12 @@ export function Login() {
               </CardTitle>
             </CardHeader>
             <CardContent>
+              {!!errorResponse && (
+                <div className=" text-center text-xs text-destructive">
+                  {errorResponse}
+                </div>
+              )}
+
               <Form {...form}>
                 <form
                   onSubmit={form.handleSubmit(onSubmit)}
@@ -96,6 +127,8 @@ export function Login() {
                           <Input
                             className="border-primary/20 dark:border-primary/10"
                             placeholder="Password"
+                            type="password"
+                            autoComplete="current-password"
                             {...field}
                             // onChange={(e) => setPassword(e.target.value)}
                           />

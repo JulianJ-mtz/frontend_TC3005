@@ -17,6 +17,8 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { useAuth } from "@/auth/auth-provider";
 import { Navigate, useNavigate } from "react-router-dom";
 import { API_URL } from "@/auth/url";
+import { AuthResponseError } from "@/types/types";
+import { useState } from "react";
 
 const formSchema = z.object({
   username: z
@@ -32,6 +34,8 @@ const formSchema = z.object({
 
 export function SignUp() {
   const goTo = useNavigate();
+  const [errorResponse, setErrorResponse] = useState("");
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -41,26 +45,37 @@ export function SignUp() {
     },
   });
 
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    try {
+      const response = await fetch(`${API_URL}/user/post`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: values.email,
+          password: values.password,
+          username: values.username,
+        }),
+      });
+
+      if (response.ok) {
+        console.log("Form submission successful");
+        goTo("/");
+      } else {
+        console.log("Something went wrong");
+        const json = (await response.json()) as AuthResponseError;
+        setErrorResponse(json.body.error);
+        throw new Error(`Error submitting form: ${response.statusText}`);
+      }
+    } catch (error) {
+      console.error("Error submitting form:", error);
+    }
+  }
+
   const auth = useAuth();
   if (auth.isAuthenticated) {
     return <Navigate to={"/to-do"} />;
-  }
-
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    fetch(`${API_URL}/user/post`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        email: values.email,
-        password: values.password,
-        username: values.username,
-      }),
-    })
-      .then((response) => response.json())
-      .then(() => goTo("/"))
-      .catch((error) => console.log(error));
   }
 
   return (
@@ -74,6 +89,12 @@ export function SignUp() {
               </CardTitle>
             </CardHeader>
             <CardContent>
+              {!!errorResponse && (
+                <div className=" text-center text-xs text-destructive">
+                  {errorResponse}
+                </div>
+              )}
+
               <Form {...form}>
                 <form
                   onSubmit={form.handleSubmit(onSubmit)}
