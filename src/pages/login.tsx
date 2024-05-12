@@ -53,7 +53,7 @@ export function Login() {
 
   return (
     <>
-      <div className="bg-gradient-to-b from-background from-15% to-primary/20">
+      <div className="bg-gradient-to-b from-background from-15% to-primary/20 w-screen">
         <div className="flex flex-col justify-center items-center h-screen">
           <Card className="w-[70%] md:w-[50%] lg:w-[45%] h-auto transition-all bg-card/95 backdrop-blur-lg dark:border-primary/20 border-primary/40">
             <CardHeader>

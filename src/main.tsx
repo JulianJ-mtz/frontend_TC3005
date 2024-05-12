@@ -7,6 +7,7 @@ import ProtectedRoute from "./pages/protected-route.tsx";
 import { AuthProvider } from "./auth/auth-provider.tsx";
 import LayoutApp from "./Layout.tsx";
 import { SignUp } from "./pages/signup.tsx";
+import { ToDo } from "./pages/ToDo/to-do.tsx";
 
 const router = createBrowserRouter([
   {
@@ -15,7 +16,7 @@ const router = createBrowserRouter([
   },
   {
     path: "/signup",
-    element: <SignUp />
+    element: <SignUp />,
   },
   {
     path: "/",
@@ -23,7 +24,7 @@ const router = createBrowserRouter([
     children: [
       {
         path: "to-do",
-        element: <div> hola </div>,
+        element: <ToDo />,
       },
     ],
   },

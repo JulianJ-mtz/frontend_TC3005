@@ -15,7 +15,7 @@ function LayoutApp({ children }: LayoutProps) {
         </div>
       </ThemeProvider>
 
-      <main>{children}</main>
+      <main className="">{children}</main>
     </>
   );
 }

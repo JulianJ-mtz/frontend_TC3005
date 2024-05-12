@@ -47,11 +47,6 @@ export function SignUp() {
   }
 
   function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log({
-      emai: values.email,
-      password: values.password,
-      username: values.username,
-    });
     fetch(`${API_URL}/user/post`, {
       method: "POST",
       headers: {
@@ -64,15 +59,13 @@ export function SignUp() {
       }),
     })
       .then((response) => response.json())
-      .then((data) => {
-        console.log(data);
-      })
+      .then(() => goTo("/"))
       .catch((error) => console.log(error));
   }
 
   return (
     <>
-      <div className="bg-gradient-to-b from-background from-15% to-primary/20">
+      <div className="bg-gradient-to-b from-background from-15% to-primary/20 w-screen">
         <div className="flex flex-col justify-center items-center h-screen">
           <Card className="w-[70%] md:w-[50%] lg:w-[45%] h-auto transition-all bg-card/95 backdrop-blur-lg dark:border-primary/20 border-primary/40">
             <CardHeader>
@@ -114,6 +107,7 @@ export function SignUp() {
                           <Input
                             className="border-primary/20  dark:border-primary/10"
                             placeholder="Username"
+                            autoComplete="username"
                             {...field}
                           />
                         </FormControl>
@@ -133,6 +127,7 @@ export function SignUp() {
                             className="border-primary/20 dark:border-primary/10"
                             placeholder="Password"
                             type="password"
+                            autoComplete="current-password"
                             {...field}
                           />
                         </FormControl>
