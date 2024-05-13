@@ -9,7 +9,7 @@ interface AuthProviderProps {
 export const AuthContext = createContext({
   isAuthenticated: false,
   getAccessToken: () => {},
-  saveUser: (userData: AuthResponse) => {},
+  saveUser: (_userData: AuthResponse) => {},
   getRefreshToken: () => {},
   getUser: () => ({} as User | undefined),
 });
@@ -21,7 +21,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   useEffect(() => {
     checkout();
-  }, []);
+  }, [checkout]);
 
   async function requestNewAccessToken(refreshToken: string) {
     try {
@@ -84,6 +84,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     setUser(userInfo);
   }
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   async function checkout() {
     if (accessToken) {
       // user authenticated

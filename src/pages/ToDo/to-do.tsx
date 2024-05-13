@@ -1,7 +1,6 @@
-import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
 import { DataTable } from "../ToDo/data-table";
 import { columns, TaskT } from "../ToDo/colums";
+import { ModalAddTask } from "@/components/add-task";
 
 import { fetchAllTasks } from "@/hooks/dataTable";
 import { useState, useEffect } from "react";
@@ -40,6 +39,15 @@ export function ToDo() {
     fetchData();
   }, [auth]);
 
+  const reloadData = async () => {
+    try {
+      const productsData = await getTable(auth.getUser()?.id);
+      setData(productsData);
+    } catch (error) {
+      console.error("Error reloading data:", error);
+    }
+  };
+
   return (
     <>
       <div className="absolute top-0 right-12 p-5">
@@ -50,9 +58,7 @@ export function ToDo() {
         <div className="flex pt-40 font-semibold text-5xl text-center">
           <p>To-Do de {auth.getUser()?.username || ""}</p>
           <div className="flex items-center px-3">
-            <Button variant={"outline"} size="icon">
-              <Plus />
-            </Button>
+            <ModalAddTask onTaskAdded={reloadData} />
           </div>
         </div>
 

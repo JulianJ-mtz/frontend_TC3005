@@ -43,6 +43,11 @@ export function Login() {
     },
   });
 
+  const auth = useAuth();
+  if (auth.isAuthenticated) {
+    return <Navigate to={"/to-do"} />;
+  }
+
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
       const response = await fetch(`${API_URL}/user/auth`, {
@@ -77,11 +82,7 @@ export function Login() {
     }
   }
 
-  const auth = useAuth();
-  if (auth.isAuthenticated) {
-    return <Navigate to={"/to-do"} />;
-  }
-
+ 
   return (
     <>
       <div className="bg-gradient-to-b from-background from-15% to-primary/20 w-screen">

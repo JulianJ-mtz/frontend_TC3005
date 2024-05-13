@@ -48,19 +48,25 @@ export function StatusCell(status: string, id: string) {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="center">
-              <DropdownMenuItem
-                onClick={() => handleChangeState(id, "not_started")}
-              >
-                <Badge variant={"secondary"}>Not Started</Badge>
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                onClick={() => handleChangeState(id, "in_progress")}
-              >
-                <Badge variant={"outline"}>In Progress</Badge>
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => handleChangeState(id, "done")}>
-                <Badge variant={"default"}>Done</Badge>
-              </DropdownMenuItem>
+              {state !== "not_started" && (
+                <DropdownMenuItem
+                  onClick={() => handleChangeState(id, "not_started")}
+                >
+                  <Badge variant={"secondary"}>Not Started</Badge>
+                </DropdownMenuItem>
+              )}
+              {state !== "in_progress" && (
+                <DropdownMenuItem
+                  onClick={() => handleChangeState(id, "in_progress")}
+                >
+                  <Badge variant={"outline"}>In Progress</Badge>
+                </DropdownMenuItem>
+              )}
+              {state !== "done" && (
+                <DropdownMenuItem onClick={() => handleChangeState(id, "done")}>
+                  <Badge variant={"default"}>Done</Badge>
+                </DropdownMenuItem>
+              )}
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
