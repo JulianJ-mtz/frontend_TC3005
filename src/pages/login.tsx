@@ -15,10 +15,10 @@ import {
 } from "@/components/ui/form";
 
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { useAuth } from "@/auth/auth-provider";
+import { useAuth } from "@/auth/useAuth";
 import { Navigate, useNavigate } from "react-router-dom";
 import { API_URL } from "@/auth/url";
-import { AuthResponseError } from "@/types/types";
+import { AuthResponse, AuthResponseError } from "@/types/types";
 
 const formSchema = z.object({
   username: z
@@ -59,7 +59,13 @@ export function Login() {
       if (response.ok) {
         console.log("Login successful");
         setErrorResponse("");
-        // goTo("/");
+
+        const json = (await response.json()) as AuthResponse;
+
+        if (json.body.accessToken && json.body.refreshToken) {
+          auth.saveUser(json);
+          goTo("/to-do");
+        }
       } else {
         console.log("Something went wrong");
         const json = (await response.json()) as AuthResponseError;
@@ -108,6 +114,7 @@ export function Login() {
                           <Input
                             className="border-primary/20  dark:border-primary/10"
                             placeholder="Username"
+                            autoComplete="username"
                             {...field}
                             // onChange={(e) => setUsername(e.target.value)}
                           />
@@ -142,10 +149,10 @@ export function Login() {
                     <Button
                       type="submit"
                       variant="default"
-                      value="Submit"
+
                       className="w-full dark:border-primary/20 border-primary"
                     >
-                      <a href="#">Submit</a>
+                      Submit
                     </Button>
                   </div>
                 </form>

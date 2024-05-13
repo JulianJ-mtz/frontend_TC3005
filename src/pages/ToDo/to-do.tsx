@@ -1,15 +1,17 @@
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { DataTable } from "../ToDo/data-table";
-import { ProductsT, columns } from "../ToDo/colums";
+import { columns, TaskT } from "../ToDo/colums";
 
-import { fetchAllProducts } from "@/hooks/dataTable";
+import { fetchAllTasks } from "@/hooks/dataTable";
 import { useState, useEffect } from "react";
+import { useAuth } from "@/auth/useAuth";
+import { FinishSession } from "@/components/log-out";
 
-export async function getTable(): Promise<ProductsT[]> {
+async function getTable(id: string | undefined) {
   try {
-    const response = await fetchAllProducts();
-    const dataProducts: ProductsT[] = await response.json();
+    const response = await fetchAllTasks(id);
+    const dataProducts = await response.json();
     return dataProducts;
   } catch (error) {
     console.error("Error fetching products:", error);
@@ -18,13 +20,15 @@ export async function getTable(): Promise<ProductsT[]> {
 }
 
 export function ToDo() {
-  const [data, setData] = useState<ProductsT[]>([]);
+  const [data, setData] = useState<TaskT[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
+
+  const auth = useAuth();
 
   useEffect(() => {
     async function fetchData() {
       try {
-        const productsData = await getTable();
+        const productsData = await getTable(auth.getUser()?.id);
         setData(productsData);
         console.log({ productsData });
         setLoading(false);
@@ -34,28 +38,34 @@ export function ToDo() {
       }
     }
     fetchData();
-  }, []);
+  }, [auth]);
 
   return (
-    <div className="flex flex-col items-center bg-gradient-to-b from-background from-15% to-primary/20 dark:to-primary/5 h-screen">
-      <div className="flex pt-40 font-semibold text-5xl text-center">
-        <p>To-Do</p>
-        <div className="flex items-center px-3">
-          <Button variant={"outline"} size="icon">
-            <Plus />
-          </Button>
-        </div>
+    <>
+      <div className="absolute top-0 right-12 p-5">
+        <FinishSession />
       </div>
 
-      {loading ? (
-        <div className="mt-10 text-center text-gray-500 font-semibold">
-          loading...
+      <div className="flex flex-col items-center bg-gradient-to-b from-background from-15% to-primary/20 dark:to-primary/5 h-screen">
+        <div className="flex pt-40 font-semibold text-5xl text-center">
+          <p>To-Do de {auth.getUser()?.username || ""}</p>
+          <div className="flex items-center px-3">
+            <Button variant={"outline"} size="icon">
+              <Plus />
+            </Button>
+          </div>
         </div>
-      ) : (
-        <div className="w-[70%] pt-10">
-          <DataTable columns={columns} data={data} />
-        </div>
-      )}
-    </div>
+
+        {loading ? (
+          <div className="mt-10 text-center text-gray-500 font-semibold">
+            loading...
+          </div>
+        ) : (
+          <div className="w-[70%] pt-10">
+            <DataTable columns={columns} data={data} />
+          </div>
+        )}
+      </div>
+    </>
   );
 }

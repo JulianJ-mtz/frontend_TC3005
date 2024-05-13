@@ -13,7 +13,14 @@ export interface AuthResponseError {
 }
 
 export interface User {
-    _id: string;
-    neme: string;
+    id: string;
     username: string;
+}
+
+export interface AccessTokenResponse {
+    statusCode: number;
+    body: {
+        accessToken: string
+    },
+    error?: string
 }

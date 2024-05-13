@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/form";
 
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { useAuth } from "@/auth/auth-provider";
+import { useAuth } from "@/auth/useAuth";
 import { Navigate, useNavigate } from "react-router-dom";
 import { API_URL } from "@/auth/url";
 import { AuthResponseError } from "@/types/types";
