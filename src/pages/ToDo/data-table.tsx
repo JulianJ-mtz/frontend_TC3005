@@ -14,8 +14,6 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-// import { DataTablePagination } from "./pagination-table";
-
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
@@ -29,12 +27,11 @@ export function DataTable<TData, TValue>({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
-    // getPaginationRowModel: getPaginationRowModel(),
   });
 
   return (
     <>
-      <div className="overflow-auto flex  min-h-[500px] max-h-[500px]">
+      <div className="overflow-auto flex rounded-md min-h-[500px] max-h-[500px]">
         <Table>
           <TableHeader className="bg-secondary sticky top-0">
             {table.getHeaderGroups().map((headerGroup) => (
@@ -84,12 +81,6 @@ export function DataTable<TData, TValue>({
           </TableBody>
         </Table>
       </div>
-
-      {/* <div className="pt-2 pb-5">
-        <div>
-          <DataTablePagination table={table} />
-        </div>
-      </div> */}
     </>
   );
 }
